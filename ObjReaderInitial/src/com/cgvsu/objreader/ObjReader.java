@@ -13,6 +13,7 @@ public class ObjReader {
 	private static final String OBJ_TEXTURE_TOKEN = "vt";
 	private static final String OBJ_NORMAL_TOKEN = "vn";
 	private static final String OBJ_FACE_TOKEN = "f";
+	private static final String OBJ_COMMENT_TOKEN = "#";
 
 	public static Model read(String fileContent) throws IncorrectFileException {
 		ArrayList<Vector3f> vertices = new ArrayList<>();
@@ -23,7 +24,7 @@ public class ObjReader {
 		Scanner scanner = new Scanner(fileContent);
 		while (scanner.hasNextLine()) {
 			final String line = scanner.nextLine();
-			ArrayList<String> wordsInLine = new ArrayList<String>(Arrays.asList(line.split("\\s+")));
+			ArrayList<String> wordsInLine = new ArrayList<String>(Arrays.asList(line.trim().split("\\s+")));
 			if (wordsInLine.isEmpty()) {
 				continue;
 			}
@@ -47,7 +48,10 @@ public class ObjReader {
 				case OBJ_TEXTURE_TOKEN -> textureVertices.add(parseTextureVertex(wordsInLine, lineInd));
 				case OBJ_NORMAL_TOKEN -> normals.add(parseNormal(wordsInLine, lineInd));
 				case OBJ_FACE_TOKEN -> polygons.add(parseFace(wordsInLine, lineInd));
-				default -> {}
+				case OBJ_COMMENT_TOKEN -> System.out.println(line);
+				default -> {
+					System.out.println("Warning! Unknown token on line " + lineInd);
+				}
 			}
 		}
 		int lengthVertex = vertices.size();

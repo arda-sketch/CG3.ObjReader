@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 class ObjReaderTest {
 
@@ -223,6 +224,7 @@ class ObjReaderTest {
         Polygon polygon = ObjReader.parseFace(wordsInLineWithoutToken, 10);
         Assertions.assertTrue(polygon.equals(expectedPolygon));
     }
+    //wrong index
     @Test
     public void testParseFace02() {
         ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1/1/2", "1/2/3", "1/5/7"));
@@ -246,6 +248,23 @@ class ObjReaderTest {
     @Test
     public void testParseFace04() {
         ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1/1/2", "3/2/3"));
+        try {
+            ObjReader.parseFace(wordsInLineWithoutToken, 10);
+        } catch (ObjReaderException exception){
+            String expectedError = "Error parsing OBJ file on line: 10. Not enough vertex to create polygon.";
+            Assertions.assertEquals(expectedError, exception.getMessage());
+        }
+    }
+    @Test
+    public void testParseFace05() throws IncorrectFileException {
+        ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1//2", "6//3", "2//7"));
+        Polygon expectedPolygon = new Polygon(new ArrayList<Integer>(Arrays.asList(1,6,2)), new ArrayList<Integer>(List.of()), new ArrayList<Integer>(Arrays.asList(2,3,7)));
+        Polygon polygon = ObjReader.parseFace(wordsInLineWithoutToken, 10);
+        Assertions.assertTrue(polygon.equals(expectedPolygon));
+    }
+    @Test
+    public void testParseFace06() throws IncorrectFileException {
+        ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("10//2", "6//3", "2//7"));
         try {
             ObjReader.parseFace(wordsInLineWithoutToken, 10);
         } catch (ObjReaderException exception){
