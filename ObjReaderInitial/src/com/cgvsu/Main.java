@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws PathReadException, IncorrectFileException {
         String fileContent = null;
         try {
-            Path fileName = Path.of("3DModels/SimpleModelsForReaderTests/LoadingTest.obj");
+            Path fileName = Path.of("Your.obj");
             fileContent = Files.readString(fileName);
         } catch (IOException e) {
             throw new PathReadException();
