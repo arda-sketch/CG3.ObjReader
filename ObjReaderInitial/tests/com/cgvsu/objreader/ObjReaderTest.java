@@ -59,13 +59,13 @@ class ObjReaderTest {
             Assertions.assertEquals(expectedError, exception.getMessage());
         }
     }
-//    @Test
-//    public void testParseTextureVertex01() {
-//        ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1.01", "1.02"));
-//        Vector2f result = ObjReader.parseTextureVertex(wordsInLineWithoutToken, 5);
-//        Vector2f expectedResult = new Vector2f(1.01f, 1.02f);
-//        Assertions.assertTrue(result.equals(expectedResult));
-//    }
+    @Test
+    public void testParseTextureVertex01() {
+        ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1.01", "1.02"));
+        Vector2f result = ObjReader.parseTextureVertex(wordsInLineWithoutToken, 5);
+        Vector2f expectedResult = new Vector2f(1.01f, 1.02f);
+        Assertions.assertTrue(result.equals(expectedResult));
+    }
 
     @Test
     public void testParseTextureVertex02() {
@@ -216,13 +216,13 @@ class ObjReaderTest {
             Assertions.assertEquals(expectedError, exception.getMessage());
         }
     }
-//    @Test
-//    public void testParseFace01() throws IncorrectFileException {
-//        ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1/1/2", "6/2/3", "2/5/7"));
-//        Polygon expectedPolygon = new Polygon(new ArrayList<Integer>(Arrays.asList(1,6,2)), new ArrayList<Integer>(Arrays.asList(1,2,5)), new ArrayList<Integer>(Arrays.asList(2,3,7)));
-//        Polygon polygon = ObjReader.parseFace(wordsInLineWithoutToken, 10);
-//        Assertions.assertTrue(polygon.equals(expectedPolygon));
-//    }
+    @Test
+    public void testParseFace01() throws IncorrectFileException {
+        ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1/1/2", "6/2/3", "2/5/7"));
+        Polygon expectedPolygon = new Polygon(new ArrayList<Integer>(Arrays.asList(1,6,2)), new ArrayList<Integer>(Arrays.asList(1,2,5)), new ArrayList<Integer>(Arrays.asList(2,3,7)));
+        Polygon polygon = ObjReader.parseFace(wordsInLineWithoutToken, 10);
+        Assertions.assertTrue(polygon.equals(expectedPolygon));
+    }
     @Test
     public void testParseFace02() {
         ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1/1/2", "1/2/3", "1/5/7"));

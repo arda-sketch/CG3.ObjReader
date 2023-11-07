@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws PathReadException, IncorrectFileException {
         String fileContent = null;
         try {
-            Path fileName = Path.of("../3DModels/SimpleModelsForReaderTests/LoadingTest.obj");
+            Path fileName = Path.of("3DModels/SimpleModelsForReaderTests/LoadingTest.obj");
             fileContent = Files.readString(fileName);
         } catch (IOException e) {
             throw new PathReadException();
@@ -31,7 +31,3 @@ public class Main {
 
     public static final float eps = 1e-7f;
 }
-//Vertices: 19882
-//Texture vertices: 21652
-//Normals: 0
-//Polygons: 19882
