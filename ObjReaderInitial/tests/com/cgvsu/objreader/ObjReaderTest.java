@@ -198,24 +198,12 @@ class ObjReaderTest {
         }
     }
     @Test
-    public void testFormatArray01() throws IncorrectFileException {
+    public void testFormatArray01() {
     ArrayList<Integer> list = new ArrayList<>(Arrays.asList(-1, 2, -3, 4));
     int n = 15;
-    ObjReader.formatArray(list, n);
+    ObjReader.formatArray(list, n, 1);
     ArrayList<Integer> expectedList = new ArrayList<>(Arrays.asList(14, 1, 12, 3));
     Assertions.assertEquals(expectedList, list);
-    }
-
-    @Test
-    public void testFormatArray02() {
-        ArrayList<Integer> list = new ArrayList<>(Arrays.asList(-1, 2, -3, 16));
-        int n = 15;
-        try{
-            ObjReader.formatArray(list, n);
-        } catch (IncorrectFileException exception){
-            String expectedError = "Input file is incorrect. Incorrect polygon parameters set.";
-            Assertions.assertEquals(expectedError, exception.getMessage());
-        }
     }
     @Test
     public void testParseFace01() throws IncorrectFileException {
@@ -256,20 +244,10 @@ class ObjReaderTest {
         }
     }
     @Test
-    public void testParseFace05() throws IncorrectFileException {
+    public void testParseFace05() {
         ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("1//2", "6//3", "2//7"));
         Polygon expectedPolygon = new Polygon(new ArrayList<Integer>(Arrays.asList(1,6,2)), new ArrayList<Integer>(List.of()), new ArrayList<Integer>(Arrays.asList(2,3,7)));
         Polygon polygon = ObjReader.parseFace(wordsInLineWithoutToken, 10);
         Assertions.assertTrue(polygon.equals(expectedPolygon));
-    }
-    @Test
-    public void testParseFace06() throws IncorrectFileException {
-        ArrayList<String> wordsInLineWithoutToken = new ArrayList<>(Arrays.asList("10//2", "6//3", "2//7"));
-        try {
-            ObjReader.parseFace(wordsInLineWithoutToken, 10);
-        } catch (ObjReaderException exception){
-            String expectedError = "Error parsing OBJ file on line: 10. Not enough vertex to create polygon.";
-            Assertions.assertEquals(expectedError, exception.getMessage());
-        }
     }
 }

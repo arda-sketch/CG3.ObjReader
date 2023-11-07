@@ -14,6 +14,7 @@ public class ObjReader {
 	private static final String OBJ_NORMAL_TOKEN = "vn";
 	private static final String OBJ_FACE_TOKEN = "f";
 	private static final String OBJ_COMMENT_TOKEN = "#";
+	private static List<Integer> polygonIds = new ArrayList<>();
 
 	public static Model read(String fileContent) throws IncorrectFileException {
 		ArrayList<Vector3f> vertices = new ArrayList<>();
@@ -34,20 +35,13 @@ public class ObjReader {
 
 			++lineInd;
 			switch (token) {
-				// Для структур типа вершин методы написаны так, чтобы ничего не знать о внешней среде.
-				// Они принимают только то, что им нужно для работы, а возвращают только то, что могут создать.
-				// Исключение - индекс строки. Он прокидывается, чтобы выводить сообщение об ошибке.
-				// Могло быть иначе. Например, метод parseVertex мог вместо возвращения вершины принимать вектор вершин
-				// модели или сам класс модели, работать с ним.
-				// Но такой подход может привести к большему количеству ошибок в коде. Например, в нем что-то может
-				// тайно сделаться с классом модели.
-				// А еще это портит читаемость
-				// И не стоит забывать про тесты. Чем проще вам задать данные для теста, проверить, что метод рабочий,
-				// тем лучше.
 				case OBJ_VERTEX_TOKEN -> vertices.add(parseVertex(wordsInLine, lineInd));
 				case OBJ_TEXTURE_TOKEN -> textureVertices.add(parseTextureVertex(wordsInLine, lineInd));
 				case OBJ_NORMAL_TOKEN -> normals.add(parseNormal(wordsInLine, lineInd));
-				case OBJ_FACE_TOKEN -> polygons.add(parseFace(wordsInLine, lineInd));
+				case OBJ_FACE_TOKEN -> {
+					polygons.add(parseFace(wordsInLine, lineInd));
+					polygonIds.add(lineInd);
+				}
 				case OBJ_COMMENT_TOKEN -> System.out.println(line);
 				default -> {
 					System.out.println("Warning! Unknown token on line " + lineInd);
@@ -57,16 +51,6 @@ public class ObjReader {
 		int lengthVertex = vertices.size();
 		int lengthTextureVertex = textureVertices.size();
 		int lengthNormal = normals.size();
-		int lengthPolygons = polygons.size();
-//		if (lengthVertex!=lengthTextureVertex){
-//			throw new IncorrectFileException("The number of vertices does not match the number of textures");
-//		}
-//		if(lengthVertex==0){
-//			throw new IncorrectFileException("There are no vertices in this file");
-//		}
-//		if(lengthPolygons==0){
-//			throw new IncorrectFileException("There are no polygons in this file");
-//		}
 		format(polygons, lengthVertex, lengthTextureVertex, lengthNormal);
 		return new Model(vertices, textureVertices, normals, polygons);
 	}
@@ -153,9 +137,6 @@ public class ObjReader {
 		return result;
 	}
 
-	// Обратите внимание, что для чтения полигонов я выделил еще один вспомогательный метод.
-	// Это бывает очень полезно и с точки зрения структурирования алгоритма в голове, и с точки зрения тестирования.
-	// В радикальных случаях не бойтесь выносить в отдельные методы и тестировать код из одной-двух строчек.
 	protected static void parseFaceWord(
 			String wordInLine,
 			ArrayList<Integer> onePolygonVertexIndices,
@@ -191,29 +172,30 @@ public class ObjReader {
 			throw new ObjReaderException("Too few arguments.", lineInd);
 		}
 	}
-	protected static void format(ArrayList<Polygon> polygons, int lengthVertex, int lengthTextureVertex, int lengthNormal) throws IncorrectFileException {
+	protected static void format(ArrayList<Polygon> polygons, int lengthVertex, int lengthTextureVertex, int lengthNormal) {
+		int count = 0;
 		for (Polygon pol: polygons) {
 			ArrayList<Integer> vertexIndices = pol.getVertexIndices();
 			ArrayList<Integer> textureVertexIndices = pol.getTextureVertexIndices();
 			ArrayList<Integer> normalIndices = pol.getNormalIndices();
-			formatArray(vertexIndices, lengthVertex);
-			formatArray(textureVertexIndices, lengthTextureVertex);
-			formatArray(normalIndices, lengthNormal);
 
+			formatArray(vertexIndices, lengthVertex, count);
+			formatArray(textureVertexIndices, lengthTextureVertex, count);
+			formatArray(normalIndices, lengthNormal, count);
+
+			count++;
 		}
 	}
-	protected static void formatArray(ArrayList<Integer> array, int n) throws IncorrectFileException {
+	protected static void formatArray(ArrayList<Integer> array, int n, int count) {
 		for (int i = 0; i < array.size(); i++) {
-			if (array.get(i) > 0) {
-				if (array.get(i)>n){
-					throw new IncorrectFileException("Incorrect polygon parameters set.");
+			if (Math.abs(array.get(i))>n){
+				throw new ObjReaderException("Incorrect polygon parameters set.", polygonIds.get(count));
+			}else {
+				if (array.get(i) > 0) {
+					array.set(i, array.get(i) - 1);
+				} else {
+					array.set(i, array.get(i) + n);
 				}
-				array.set(i, array.get(i) - 1);
-			} else {
-				if (Math.abs(array.get(i))>n){
-					throw new IncorrectFileException("Incorrect polygon parameters set.");
-				}
-				array.set(i, array.get(i) + n);
 			}
 		}
 	}
