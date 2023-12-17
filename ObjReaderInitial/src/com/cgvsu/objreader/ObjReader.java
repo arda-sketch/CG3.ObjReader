@@ -74,7 +74,7 @@ public class ObjReader {
 	}
 
 	protected static Vector2f parseTextureVertex(final ArrayList<String> wordsInLineWithoutToken, int lineInd) {
-		if (wordsInLineWithoutToken.size()>2){
+		if (wordsInLineWithoutToken.size()>3){
 			throw new ObjReaderException("Too many texture vertex arguments.", lineInd);
 		}
 		try {
